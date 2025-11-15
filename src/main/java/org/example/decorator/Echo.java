@@ -15,4 +15,10 @@ public class Echo extends EffectDecorator
         super.play();
 
     }
+    @Override
+    public String processLyrics(String lyrics)
+    {
+        return super.processLyrics(lyrics)
+                .replaceAll("(\\b\\w+\\b)", "$1oooo");
+    }
 }

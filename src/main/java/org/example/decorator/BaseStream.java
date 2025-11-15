@@ -12,6 +12,10 @@ public class BaseStream implements AudioStream
     @Override
     public void play()
     {
-        System.out.println("PLaying track: " + trackName);
+        System.out.println("Playing track: " + trackName);
+    }
+    @Override
+    public String processLyrics(String lyrics) {
+        return lyrics;
     }
 }
