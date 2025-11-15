@@ -16,7 +16,7 @@ public class Track  {
 
     @Override
     public String toString() {
-        return String.format("[%s] %s — %s (%ds) album=%s genre=%s source=%s",
+        return String.format("[%s] %s — %s (%ds) album=%s",
                 id, title, artist, durationSec,
                 album == null ? "-" : album);
     }

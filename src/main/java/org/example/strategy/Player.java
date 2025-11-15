@@ -5,7 +5,6 @@ import org.example.observer.PlayerObserver;
 import org.example.observer.PlayerSubject;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Player implements PlayerSubject {
@@ -66,7 +65,18 @@ public class Player implements PlayerSubject {
     }
 
     public void next() {
-        Track oldTrack = playlist.get(currentIndex);
+        if (playlist == null || playlist.isEmpty()) {
+            System.out.println("Playlist is empty.");
+            return;
+        }
+
+        Track oldTrack = getCurrent();
+
+        if (currentIndex == -1) {
+            System.out.println("Playback already finished.");
+            return;
+        }
+
         currentIndex = strategy.next(playlist, currentIndex);
 
         if (currentIndex == -1) {
