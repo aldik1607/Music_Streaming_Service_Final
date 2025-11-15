@@ -19,8 +19,10 @@ public class MusicFacade {
     {
         String loaded = songLoader.load(trackName);
         playerService.play(stream);
+        String original = lyricsProvider.getLyrics(loaded);
+        String processed = stream.processLyrics(original);
         System.out.println("\n=== LYRICS ===");
-        System.out.println(lyricsProvider.getLyrics(loaded));
+        System.out.println(processed);
         System.out.println("\n=== MUSIC FACADE END ===");
 
     }

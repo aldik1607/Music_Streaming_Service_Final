@@ -11,4 +11,8 @@ public abstract class EffectDecorator implements AudioStream {
     {
         wrappedStream.play();
     }
+    @Override
+    public String processLyrics(String lyrics) {
+        return wrappedStream.processLyrics(lyrics);
+    }
 }

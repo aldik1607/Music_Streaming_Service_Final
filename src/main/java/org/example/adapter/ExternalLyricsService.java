@@ -1,16 +1,23 @@
 package org.example.adapter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class ExternalLyricsService {
     public String fetchLyricText(String song,String artist) {
         String fileName = artist.replace(" ", "") + "-" + song.replace(" ", "") + ".txt" ;
+        String path = "lyrics/" + fileName;
         try {
-            Path path = Path.of( "src/main/resources/lyrics/" + fileName );
-            return Files.readString(path);
-        } catch(Exception e){
-            return "[External API] Lyrics not found: " + artist + " - " + song ;
+
+            InputStream in = getClass().getClassLoader()
+                    .getResourceAsStream(path);
+            if (in == null) {
+                return "[External API] Lyrics not found: " + artist + " - " + song; // FIX
+            }
+
+
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8); // FIX
+        } catch (Exception e) {
+            return "[External API ERROR] Cannot read: " + fileName;
         }
     }
 }
