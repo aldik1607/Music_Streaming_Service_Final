@@ -6,7 +6,13 @@ import org.example.models.Track;
 import org.example.observer.AnalyticsListener;
 import org.example.observer.UiListener;
 import org.example.strategy.*;
-
+import org.example.decorator.*;
+import org.example.facade.MusicFacade;
+import org.example.facade.PlayerService;
+import org.example.facade.PlaylistManager;
+import org.example.facade.SongLoader;
+import org.example.adapter.LyricsAdapter;
+import org.example.adapter.LyricsProvider;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,6 +20,11 @@ public class ConsoleMenu {
     private Player player;
     private ArrayList<Playlist> playlists;
     private Scanner scanner;
+    private MusicFacade musicFacade;
+    private LyricsProvider lyricsProvider;
+    private boolean bass = false;
+    private boolean echo = false;
+    private boolean reverb = false;
 
     public ConsoleMenu() {
         scanner = new Scanner(System.in);
@@ -23,6 +34,13 @@ public class ConsoleMenu {
         player = new Player(playlists.get(0).getPlaylist(), new SequentialStrategy());
         player.registerObserver(new UiListener());
         player.registerObserver(new AnalyticsListener());
+        lyricsProvider = new LyricsAdapter();
+        musicFacade = new MusicFacade(
+                new PlayerService(),
+                new SongLoader(),
+                new PlaylistManager(),
+                lyricsProvider
+        );
     }
 
     public void start() {
@@ -61,6 +79,12 @@ public class ConsoleMenu {
                 case 9:
                     createNewPlaylist();
                     break;
+                case 10: playWithEffects();
+                break;
+                case 11: chooseEffects();
+                break;
+                case 12: showLyrics();
+                break;
                 case 0:
                     System.out.println("Goodbye!");
                     running = false;
@@ -85,6 +109,9 @@ public class ConsoleMenu {
         System.out.println("7. Show Current Track");
         System.out.println("8. Show All Playlists");
         System.out.println("9. Create New Playlist");
+        System.out.println("10. Play with Effects (Decorator + Facade)");
+        System.out.println("11. Choose Effects (Bass, Echo, Reverb)");
+        System.out.println("12. Show Lyrics");
         System.out.println("0. Exit");
         System.out.println("-------------------------");
     }
@@ -164,7 +191,52 @@ public class ConsoleMenu {
             }
         }
     }
+    private void chooseEffects(){
+        System.out.println("\nChoose Effects:");
+        System.out.println("1. BassBoost (" + (bass ? "ON" : "OFF") + ")");
+        System.out.println("2. Echo (" + (echo ? "ON" : "OFF") + ")");
+        System.out.println("3. Reverb (" + (reverb ? "ON" : "OFF") + ")");
+        System.out.println("0. Back");
+        int c = getIntInput("Enter: ");
+        switch (c)  {
+            case 1 -> bass = !bass;
+            case 2 -> echo = !echo;
+            case 3 -> reverb = !reverb;
+            case 0 -> {return; }
+            default -> System.out.println("Invalid choice");
+        }
+    }
 
+
+    private  AudioStream buildEffects (String trackName){
+        AudioStream stream =  new BaseStream(trackName);
+        if (bass) stream = new BassBoost(stream);
+        if (echo) stream = new Echo(stream);
+        if (reverb) stream = new Reverb(stream);
+
+        return stream;
+    }
+    private void playWithEffects(){
+        Track current = player.getCurrent();
+        if (current == null) {
+            System.out.println("No track selected");
+            return;
+        }
+        String trackName = current.getArtist() + " - " + current.getTitle();
+        AudioStream stream = buildEffects(trackName);
+        musicFacade.playTrack(stream, trackName);
+    }
+    private void showLyrics(){
+        Track current = player.getCurrent();
+        if (current == null) {
+            System.out.println("No track selected");
+            return;
+
+        }
+        String trackName = current.getArtist() + " - " + current.getTitle();
+        System.out.println("\n=== LYRICS ===");
+        System.out.println(lyricsProvider.getLyrics(trackName));
+    }
     private void createNewPlaylist() {
         System.out.print("Enter playlist name: ");
         String name = scanner.nextLine();
