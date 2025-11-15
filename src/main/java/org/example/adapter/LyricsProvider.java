@@ -1,4 +1,5 @@
 package org.example.adapter;
 
-public class LyricsProvider {
+public interface LyricsProvider {
+    String getLyrics(String trackName);
 }
