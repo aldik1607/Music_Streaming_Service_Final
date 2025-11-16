@@ -19,6 +19,6 @@ public class Reverb extends EffectDecorator
     public String processLyrics(String lyrics)
     {
         return super.processLyrics(lyrics)
-                + "\n\n~~ fading into spacious reverb ~~";
+                .replaceAll("(\\b\\w+\\b)", "$1...");
     }
 }

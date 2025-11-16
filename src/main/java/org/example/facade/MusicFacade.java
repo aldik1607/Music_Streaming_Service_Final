@@ -15,23 +15,27 @@ public class MusicFacade {
         this.playlistManager = playlistManager;
         this.lyricsProvider = lyricsProvider;
     }
-    public void playTrack(AudioStream stream, String trackName)
-    {
+    public void playTrack(AudioStream stream, String trackName) {
         String loaded = songLoader.load(trackName);
+        System.out.println("\n=== PLAYBACK START ===");
         playerService.play(stream);
         String original = lyricsProvider.getLyrics(loaded);
-        String processed = stream.processLyrics(original);
-        System.out.println("\n=== LYRICS ===");
-        System.out.println(processed);
-        System.out.println("\n=== MUSIC FACADE END ===");
+        if (original != null) {
+            String processed = stream.processLyrics(original);
+            System.out.println("\n=== LYRICS (WITH EFFECTS) ===");
+            System.out.println(processed);
+        } else {
+            System.out.println("\n(No lyrics available)");
+        }
 
+        System.out.println("\n=== FACADE END ===");
     }
-    public void showPlaylist(List<String> tracks)
-    {
+
+    public void showPlaylist(java.util.List<String> tracks) {
         playlistManager.printPlaylist(tracks);
     }
-    public void stopTrack()
-    {
+
+    public void stopTrack() {
         playerService.stop();
     }
 }
